@@ -1,4 +1,3 @@
-from fastapi_cloud_cli.commands.apps import list_apps
 from sqlalchemy.ext.asyncio import AsyncSession
 from service.excecoes.execoes_usuario import MatriculaCadastradaError, MatriculaInvalidaError, SenhaInvalidaError, NomeInvalidaError, UsuarioNaoEncontradoError
 from model.repository.repo_usuario import RepoUsuario
@@ -11,9 +10,7 @@ class UsuarioService:
         self.repo_usuario = RepoUsuario()
         self.criptografador = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Métodos deletar_user, alterar_senha , listar_usuarios
-
-    async def cadastrar_usuario(self, usuario: Usuario, session: AsyncSession):
+    async def cadastrar_usuario(self, usuario: Usuario, session: AsyncSession) ->Usuario:
 
         usuario_procurado = await self.repo_usuario.buscar_usuario(usuario.matricula, session)
 
@@ -31,7 +28,9 @@ class UsuarioService:
 
         usuario.senha = self.criptografador.hash(usuario.senha)
 
-        await self.repo_usuario.cadastrar_usuario(usuario, session)
+        resultado = await self.repo_usuario.cadastrar_usuario(usuario, session)
+
+        return resultado
 
     async def deletar_usuario(self,usuario_matricula: str,session: AsyncSession)-> Usuario:
 
@@ -65,4 +64,14 @@ class UsuarioService:
             raise UsuarioNaoEncontradoError("Não há nenhum usuário cadastrado ainda...")
 
         return lista_de_usuario
+
+    async def busca_usuario(self,usuario_matricula: str,session: AsyncSession) -> Usuario:
+
+        usuario = await self.repo_usuario.buscar_usuario(usuario_matricula,session)
+
+        if not usuario:
+            raise UsuarioNaoEncontradoError("Usuário não encontrado...")
+
+
+        return usuario
 

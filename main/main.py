@@ -1,9 +1,7 @@
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
-import uvicorn
-
 from config.database import Database
+from routes.routes_u import router
 
 db = Database()
 
@@ -25,5 +23,4 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-if __name__ == "__main__":
-    lifespan(app)
+app.include_router(router)
