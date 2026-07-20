@@ -15,7 +15,7 @@ class RepoProduto:
 
          return produto
 
-    async def  buscar_produto(self,produto_id, session: AsyncSession) -> Produto:
+    async def  buscar_produto(self,produto_id: int, session: AsyncSession) -> Produto:
         resultado = await session.execute(
             select(Produto).where(Produto.id==produto_id)
         )
@@ -38,8 +38,6 @@ class RepoProduto:
 
         produto.nome = novoProduto.nome
         produto.quantidade = novoProduto.quantidade
-        produto.doado = novoProduto.doado
-        produto.negociador = novoProduto.negociador
 
         await session.commit()
         await session.refresh(produto)

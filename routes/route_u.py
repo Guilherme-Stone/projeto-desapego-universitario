@@ -1,26 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
-from httpcore import HTTPConnection
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from config import database
-from model.entities.anuncio import Anuncio
-from model.entities.produto import Produto
-from model.entities.role import Role
 from model.entities.usuario import Usuario
 from config.database import db
-from schemas.dto_u import DTOUsuarioCriar, DTOUsuarioResposta,DTOUsuarioRepostaLista
+from schemas.dto_u import DTOUsuarioCriar, DTOUsuarioResposta, DTOUsuarioRepostaLista, DTOAlterarSenha
 from service.excecoes.execoes_usuario import MatriculaCadastradaError, NomeInvalidaError, SenhaInvalidaError, \
     MatriculaInvalidaError, UsuarioNaoEncontradoError
 from service.usuario_service import UsuarioService
 
 
-router = APIRouter()
+router_u = APIRouter()
 
 
-@router.post("/api/cadastro", response_model= DTOUsuarioResposta)
+@router_u.post("/api/cadastro_u", response_model= DTOUsuarioResposta)
 async def criar_usuario(dto_u: DTOUsuarioCriar, session: AsyncSession = Depends(db.get_db)):
  try:
-   usuario = Usuario(matricula=dto_u.matricula,nome = dto_u.nome, produtos= [], anuncios= [],role=dto_u.role)
+   usuario = Usuario(matricula=dto_u.matricula,senha=dto_u.senha,nome = dto_u.nome,role=dto_u.role)
 
    usuario_service = UsuarioService()
 
@@ -44,11 +38,11 @@ async def criar_usuario(dto_u: DTOUsuarioCriar, session: AsyncSession = Depends(
  except MatriculaInvalidaError as me:
      raise HTTPException(status_code=500, detail=me)
 
- except HTTPConnection as ex:
+ except HTTPException as ex:
      raise HTTPException(status_code=400, detail=ex)
 
 
-@router.get("/api/usuarios/{usuario_matricula}",response_model=DTOUsuarioResposta)
+@router_u.get("/api/usuarios/{usuario_matricula}",response_model=DTOUsuarioResposta)
 async def buscar_usuario(usuario_matricula: str, session: AsyncSession = Depends(db.get_db)):
     try:
         usuario_service = UsuarioService()
@@ -61,12 +55,12 @@ async def buscar_usuario(usuario_matricula: str, session: AsyncSession = Depends
             "body": resultado
         }
     except UsuarioNaoEncontradoError as u:
-        raise HTTPException(status_code=500,detail=u)
+        raise HTTPException(status_code=404,detail=u)
 
-    except HTTPConnection as ex:
+    except HTTPException as ex:
         raise HTTPException(status_code=400, detail=ex)
 
-@router.get("/api/usuarios",response_model=DTOUsuarioRepostaLista)
+@router_u.get("/api/usuarios",response_model=DTOUsuarioRepostaLista)
 async def listar_usuarios(session:AsyncSession = Depends(db.get_db)):
     try:
         service = UsuarioService()
@@ -80,17 +74,17 @@ async def listar_usuarios(session:AsyncSession = Depends(db.get_db)):
         }
 
     except UsuarioNaoEncontradoError as u:
-        raise HTTPException(status_code=500,detail=u)
+        raise HTTPException(status_code=404,detail=u)
 
-    except HTTPConnection as ex:
+    except HTTPException as ex:
         raise HTTPException(status_code=400, detail=ex)
 
-@router.patch("/api/usuarios/{usuario_matricula}", response_model= DTOUsuarioResposta)
-async def atualizar_senha(usuario_matricula,session: AsyncSession = Depends(db.get_db)):
+@router_u.patch("/api/usuarios/{usuario_matricula}", response_model= DTOUsuarioResposta)
+async def atualizar_senha(usuario_matricula,dto_senha:DTOAlterarSenha,session: AsyncSession = Depends(db.get_db)):
     try:
         usuario_service = UsuarioService()
 
-        resultado = await usuario_service.alterar_senha(usuario_matricula,session)
+        resultado = await usuario_service.alterar_senha(usuario_matricula,dto_senha.senha,session)
 
         return {
             "statuscode": 200,
@@ -99,15 +93,15 @@ async def atualizar_senha(usuario_matricula,session: AsyncSession = Depends(db.g
         }
 
     except UsuarioNaoEncontradoError as u:
-        raise HTTPException(status_code=500,detail=u)
+        raise HTTPException(status_code=404,detail=u)
 
-    except HTTPConnection as ex:
+    except HTTPException as ex:
         raise HTTPException(status_code=400, detail=ex)
 
     except SenhaInvalidaError as s:
         HTTPException(status_code=500, detail=s)
 
-@router.delete("/api/usuarios/{usuario_matricula}", response_model= DTOUsuarioResposta)
+@router_u.delete("/api/usuarios/{usuario_matricula}", response_model= DTOUsuarioResposta)
 async def deletar_usuario(usuario_matricula,session: AsyncSession = Depends(db.get_db)):
     try:
 
@@ -122,7 +116,7 @@ async def deletar_usuario(usuario_matricula,session: AsyncSession = Depends(db.g
         }
 
     except UsuarioNaoEncontradoError as e:
-        raise HTTPException(status_code=500, detail=e)
+        raise HTTPException(status_code=404, detail=e)
 
-    except HTTPConnection as ex:
+    except HTTPException as ex:
         raise HTTPException(status_code=400, detail=ex)

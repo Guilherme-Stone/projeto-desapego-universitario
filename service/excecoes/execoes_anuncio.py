@@ -3,3 +3,6 @@ class AnuncioNaoEncontradoError(Exception):
 
 class AnuncioInvalidoError(Exception):
     pass
+
+class AnuncioCadastradoError(Exception):
+    pass

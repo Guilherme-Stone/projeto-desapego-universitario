@@ -1,8 +1,10 @@
-from sqlalchemy import String, Float, ForeignKey
+from sqlalchemy import String, Float, ForeignKey, Boolean
 from config.database import Base
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.orm import mapped_column
 from typing import TYPE_CHECKING
+
+from model.entities.produto import Produto
 
 if TYPE_CHECKING:
     from model.entities.usuario import Usuario
@@ -18,4 +20,6 @@ class Anuncio(Base):
     nome: Mapped[str] = mapped_column(String)
     data_inicio: Mapped[str] = mapped_column(String)
     usuario_id: Mapped[int] = mapped_column(ForeignKey("Usuario.id"))
+    produtos: Mapped[list[Produto]] = relationship(Produto, back_populates="anuncios",cascade='all,delete-orphan')
+    doado: Mapped[bool] = mapped_column(Boolean)
 

@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from config.database import Database
-from routes.routes_u import router
+from routes.route_u import router
 
 db = Database()
 

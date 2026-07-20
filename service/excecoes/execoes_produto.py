@@ -3,3 +3,6 @@ class ProdutoNaoEncontradoError(Exception):
 
 class ProdutoInvalidoError(Exception):
     pass
+
+class ProdutoCadastradoError(Exception):
+    pass

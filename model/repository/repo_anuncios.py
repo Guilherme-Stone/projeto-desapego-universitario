@@ -40,7 +40,7 @@ class RepoAnuncio():
         anuncio.nome = novoAnuncio.nome
         anuncio.preco = novoAnuncio.preco
         anuncio.data_inicio = novoAnuncio.data_inicio
-        anuncio.negociador = novoAnuncio.negociador
+        anuncio.doado = novoAnuncio.doado
 
         await session.commit()
         await session.refresh(anuncio)

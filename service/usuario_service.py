@@ -33,7 +33,6 @@ class UsuarioService:
         return resultado
 
     async def deletar_usuario(self,usuario_matricula: str,session: AsyncSession)-> Usuario:
-
         usuario = await self.repo_usuario.buscar_usuario(usuario_matricula,session)
 
         if not usuario:

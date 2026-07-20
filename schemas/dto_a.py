@@ -1,23 +1,33 @@
 from pydantic import BaseModel
 
-# O que eu quero criar
+class DTOAnuncioBase(BaseModel):
+    nome:str
+    preco: int
+    data_inicio: str
+    doado:bool
+
+
+class DTOAnuncio(DTOAnuncioBase):
+    id: int
+    usuario_id: int
+
+    class Config:
+        from_attributes = True
+
+class DTOAnuncioAdicionar(DTOAnuncioBase):
+    usuario_id:int
+    pass
+
+class DTOAnuncioResposta(BaseModel):
+    statuscode: int
+    message: str
+    body: DTOAnuncio
+
+
+class DTOAnuncioRespostaLista(BaseModel):
+    statuscode: int
+    message: str
+    body: list[DTOAnuncio]
 
 
 
-
-
-
-#O que eu quero mandar de resposta
-
-
-
-#O que eu quero mandar aAPÓS Aatulaizae
-
-
-
-#Mandar a busca
-
-
-
-
-#Mn

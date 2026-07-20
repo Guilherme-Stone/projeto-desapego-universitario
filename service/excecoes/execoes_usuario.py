@@ -13,3 +13,5 @@ class MatriculaInvalidaError(Exception):
 class UsuarioNaoEncontradoError(Exception):
     pass
 
+class UsuarioInvalidoError(Exception):
+    pass
